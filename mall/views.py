@@ -14,3 +14,14 @@ def index(request):
             'products': products,
         }
     )
+
+def single_post_page(request, pk):
+    product = Product.objects.get(pk=pk)
+
+    return render(
+        request,
+        'mall/single_post_page.html',
+        {
+            'product' : product,
+        }
+    )
