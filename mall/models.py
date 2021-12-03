@@ -12,7 +12,7 @@ class Product(models.Model):
     publisher = models.CharField(max_length=50)
 
     released_at = models.DateField(null=True)
-    #head_image = models.ImageField(upload_to='mall/images/%Y/%m/%d/', blank=True) #-> 프로젝트 파일 > urls setting, static import urlpatterns 작성
+    head_image = models.ImageField(upload_to='mall/images/%Y/%m/%d/', blank=True) #-> 프로젝트 파일 > urls setting, static import urlpatterns 작성
 
     #author = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)
     #category = models.ForeignKey(Category, null=True, blank=True, on_delete=models.SET_NULL)
