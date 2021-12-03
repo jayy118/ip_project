@@ -1,27 +1,13 @@
 from django.shortcuts import render
+from django.views.generic import ListView, DetailView
 
-# Create your views here.
 from mall.models import Product
 
 
-def index(request):
-    products = Product.objects.all().order_by('-pk')
+class ProductList(ListView):
+    model = Product
+    ordering = '-pk'
 
-    return render(
-        request,
-        'mall/index.html',
-        {
-            'products': products,
-        }
-    )
 
-def single_post_page(request, pk):
-    product = Product.objects.get(pk=pk)
-
-    return render(
-        request,
-        'mall/single_post_page.html',
-        {
-            'product' : product,
-        }
-    )
+class ProductDetail(DetailView):
+    model = Product
