@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Mall</title>
+</head>
+<body>
+    <h1>Mall</h1>
+
+{% for p in products %}
+    <hr>
+    <h2>{{ p.name }} - {{ p.publisher }}</h2>
+    <h4>{{ p.released_at }}</h4>
+    <p> {{ p.content }}</p>
+{% endfor %}
+
+</body>
+</html>
