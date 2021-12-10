@@ -7,6 +7,23 @@ class TestView(TestCase):
     def setUp(self):
         self.client = Client()
 
+    def navbar_test(self, soup):
+        navbar = soup.nav
+        self.assertIn('Mall', navbar.text)
+        self.assertIn('About Us', navbar.text)
+
+        logo_btn = navbar.find('a', text='DS Games')
+        self.assertEqual(logo_btn.attrs['href'], '/')
+
+        home_btn = navbar.find('a', text='Home')
+        self.assertEqual(home_btn.attrs['href'], '/')
+
+        mall_btn = navbar.find('a', text='Mall')
+        self.assertEqual(mall_btn.attrs['href'], '/mall/')
+
+        about_us_btn = navbar.find('a', text='About Us')
+        self.assertEqual(about_us_btn.attrs['href'], '/about_us/')
+
     def test_post_list(self):
         # 상품 목록 페이지를 가져온다
         response = self.client.get('/mall/')
@@ -16,10 +33,7 @@ class TestView(TestCase):
         soup = BeautifulSoup(response.content, 'html.parser')
         self.assertEqual(soup.title.text, 'Mall')
         # 네비게이션바가 있다
-        navbar = soup.nav
-        # 네비게이션바에 Mall, About Us 라는 문구가 있다
-        self.assertIn('Mall', navbar.text)
-        self.assertIn('About Us', navbar.text)
+        self.navbar_test(soup)
 
         # 포스트(게시물)이 하나도 없는 경우
         self.assertEqual(Product.objects.count(), 0)
@@ -66,9 +80,7 @@ class TestView(TestCase):
         self.assertEqual(response.status_code, 200)
         soup = BeautifulSoup(response.content, 'html.parser')
         # 상품목록과 같은 네비게이션바가 있는가
-        navbar = soup.nav
-        self.assertIn('Mall', navbar.text)
-        self.assertIn('About Us', navbar.text)
+        self.navbar_test(soup)
         # 상품 name은 웹브라우저의 name에 있는가
         self.assertIn(product_001.name, soup.title.text)
         # 상품의 name은 포스트영역에도 있는가
