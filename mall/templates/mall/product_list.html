@@ -5,20 +5,25 @@
         {% if product_list.exists %}
           {% for p in product_list %}
           <!-- Blog post-->
-        <div class="card mb-4">
+        <div class="card mb-4" id="product-{{ p.pk }}">
             {% if p.head_image %}
             <img class="card-img-top" src="{{ p.head_image.url }}" alt="{{ p }} head-image" />
             {% else %}
             <img class="card-img-top" src="https://picsum.photos/seed/{{ p.id }}/600/400" alt="random_image">
             {% endif %}
           <div class="card-body">
-              <h2 class="card-title h4">{{ p.name }}</h2>
-              <h6 class="text-muted">가격: {{ p.price }}원</h6>
+              {% if p.category %}
+                 <span class="badge badge-secondary float-right">{{ p.category }}</span>
+              {% else %}
+                <span class="badge badge-secondary float-right">미분류</span>
+              {% endif %}
+              <h2 class="card-title h4">{{ p.name }}<span class="text-muted h5">&nbsp; &#8361; {{ p.price }} </span></h2>
+              <h6 class="text-muted">Published by {{ p.publisher }}</h6>
               <p class="card-text">{{ p.content | truncatewords:45 }}</p>
               <a class="btn btn-primary" href="{{ p.get_absolute_url }}">Read more →</a>
           </div>
             <div class="card-footer">
-                <div class="small text-muted">{{ p.released_at }} by {{ p.publisher }}
+                <div class="small text-muted">Released on {{ p.released_at }}
                 </div>
             </div>
         </div>

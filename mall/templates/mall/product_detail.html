@@ -8,9 +8,9 @@
                         <!-- product header-->
                         <header class="mb-4">
                             <!-- product title-->
-                            <h1 class="fw-bolder mb-1">{{ product.name }}</h1>
+                            <h1 class="fw-bolder mb-1">{{ product.name }} <span class="text-muted h3"> &#8361; {{ product.price}} </span></h1>
                             <!-- product meta content-->
-                            <div class="text-muted fst-italic mb-2">Released on {{ product.released_at }}1 by 작성자(개발 예정)</div>
+                            <div class="text-muted fst-italic mb-2">Released on {{ product.released_at }} &#124; by {{ product.publisher }}</div>
                             <!-- product categories-->
                             <a class="badge bg-secondary text-decoration-none link-light" href="#!">Web Design</a>
                             <a class="badge bg-secondary text-decoration-none link-light" href="#!">Freebies</a>
