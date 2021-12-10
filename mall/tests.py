@@ -1,7 +1,8 @@
 from bs4 import BeautifulSoup
 from django.contrib.auth.models import User
 from django.test import TestCase, Client
-from .models import Product, Category
+from .models import Product, Category, Tag
+
 
 # Create your tests here.
 class TestView(TestCase):
@@ -13,6 +14,11 @@ class TestView(TestCase):
         self.category_rpg = Category.objects.create(name='rpg', slug='rpg')
         self.category_simulation = Category.objects.create(name='simulation', slug='simulation')
 
+        self.tag_single = Tag.objects.create(name='싱글 플레이어', slug='싱글-플레이어')
+        self.tag_coop = Tag.objects.create(name='협동', slug='협동')
+        self.tag_multi = Tag.objects.create(name='멀티 플레이어', slug='멀티-플레이어')
+
+
         self.product_001 = Product.objects.create(
             name="abc",
             content='Hello World.',
@@ -20,6 +26,7 @@ class TestView(TestCase):
             category=self.category_simulation,
             author=self.user_james
         )
+        self.product_001.tags.add(self.tag_single)
 
         self.product_002 = Product.objects.create(
             name="defg",
@@ -30,11 +37,13 @@ class TestView(TestCase):
         )
 
         self.product_003 = Product.objects.create(
-            name="abc",
+            name="twer",
             content='Hello World.',
             price=1234,
             author=self.user_james
         )
+        self.product_003.tags.add(self.tag_coop)
+        self.product_003.tags.add(self.tag_multi)
 
     def category_card_test(self, soup):
         category = soup.find('div', id='categories-card')
@@ -82,14 +91,23 @@ class TestView(TestCase):
         product_001_card = main_area.find('div', id='product-1')
         self.assertIn(self.product_001.name, product_001_card.text)
         self.assertIn(self.product_001.category.name, product_001_card.text)
+        self.assertIn(self.tag_single.name, product_001_card.text)
+        self.assertNotIn(self.tag_coop.name, product_001_card.text)
+        self.assertNotIn(self.tag_multi.name, product_001_card.text)
 
         product_002_card = main_area.find('div', id='product-2')
         self.assertIn(self.product_002.name, product_002_card.text)
         self.assertIn(self.product_002.category.name, product_002_card.text)
+        self.assertNotIn(self.tag_single.name, product_002_card.text)
+        self.assertNotIn(self.tag_coop.name, product_002_card.text)
+        self.assertNotIn(self.tag_multi.name, product_002_card.text)
 
         product_003_card = main_area.find('div', id='product-3')
         self.assertIn(self.product_003.name, product_003_card.text)
         self.assertIn('미분류', product_003_card.text)
+        self.assertNotIn(self.tag_single.name, product_003_card.text)
+        self.assertIn(self.tag_coop.name, product_003_card.text)
+        self.assertIn(self.tag_multi.name, product_003_card.text)
 
         #self.assertIn(self.user_james.username.upper(), main_area.text)
         #self.assertIn(self.user_trump.username.upper(), main_area.text)
@@ -108,7 +126,7 @@ class TestView(TestCase):
         self.assertIn('아직 상품이 없습니다.', main_area.text)
 
 
-def test_post_detail(self):
+    def test_post_detail(self):
         # 상품 하나
         # 이 상품의 url이 /blog/1
         self.assertEqual(self.product_001.get_absolute_url(), '/mall/1/')
@@ -130,3 +148,23 @@ def test_post_detail(self):
         # 아직 작성중
         # 포스트 내용이 있는가
         self.assertIn(self.product_001.content, post_area.text)
+
+        self.assertIn(self.tag_single.name, post_area.text)
+        self.assertNotIn(self.tag_multi.name, post_area.text)
+        self.assertNotIn(self.tag_coop.name, post_area.text)
+
+    def test_category_page(self):
+        response = self.client.get(self.category_simulation.get_absolute_url())
+        self.assertEqual(response.status_code, 200)
+
+        soup = BeautifulSoup(response.content, 'html.parser')
+        self.navbar_test(soup)
+        self.category_card_test(soup)
+
+        self.assertIn(self.category_simulation.name, soup.h1.text)
+
+        main_area = soup.find('div', id='main-area')
+        self.assertIn(self.category_simulation.name, main_area.text)
+        self.assertIn(self.product_001.name, main_area.text)
+        self.assertNotIn(self.product_002.name, main_area.text)
+        self.assertNotIn(self.product_003.name, main_area.text)

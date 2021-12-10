@@ -1,7 +1,9 @@
 {% extends 'mall/base.html' %}
 
 {% block main_area %}
-    <h1>Mall</h1>
+
+    <h1>Mall {% if category %}<span class="badge badge-pill badge-secondary">{{ category }}</span>{% endif %}</h1>
+
         {% if product_list.exists %}
           {% for p in product_list %}
           <!-- Blog post-->
@@ -20,6 +22,16 @@
               <h2 class="card-title h4">{{ p.name }}<span class="text-muted h5">&nbsp; &#8361; {{ p.price }} </span></h2>
               <h6 class="text-muted">Published by {{ p.publisher }}</h6>
               <p class="card-text">{{ p.content | truncatewords:45 }}</p>
+
+              {% if p.tags.exists %}
+              <i class="fas fa-tags"></i>
+              {% for tag in p.tags.iterator %}
+                <a href="{{ tag.get_absolute_url }}"><span class="badge badge-pill badge-light">{{ tag }}</span></a>
+              {% endfor %}
+              <br/>
+              <br/>
+              {% endif %}
+
               <a class="btn btn-primary" href="{{ p.get_absolute_url }}">Read more →</a>
           </div>
             <div class="card-footer">

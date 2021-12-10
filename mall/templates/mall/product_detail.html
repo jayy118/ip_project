@@ -5,6 +5,11 @@
 {% block main_area %}
                     <!-- product content-->
                     <div id="post-area">
+                        {% if product.category %}
+                            <span class="badge badge-secondary float-right">{{ product.category }}</span>
+                        {% else %}
+                             <span class="badge badge-secondary float-right">미분류</span>
+                        {% endif %}
                         <!-- product header-->
                         <header class="mb-4">
                             <!-- product title-->
@@ -25,6 +30,15 @@
                         <section class="mb-5">
                             <p> {{ product.content }} </p>
                         </section>
+
+                        {% if product.tags.exists %}
+                          <i class="fas fa-tags"></i>
+                          {% for tag in product.tags.iterator %}
+                            <a href="{{ tag.get_absolute_url }}"><span class="badge badge-pill badge-light">{{ tag }}</span></a>
+                          {% endfor %}
+                          <br/>
+                          <br/>
+                        {% endif %}
                     </div>
                     <!-- Comments section-->
                     <div id="comment-area" class="mb-5">
