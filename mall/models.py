@@ -12,7 +12,7 @@ class Tag(models.Model):
         return self.name
 
     def get_absolute_url(self):
-        return f'/mall.tag/{self.slug}'
+        return f'/mall/tag/{self.slug}/'
 
 class Category(models.Model):
     name = models.CharField(max_length=50, unique=True)
