@@ -82,6 +82,54 @@ class TestView(TestCase):
         self.assertEqual(last_post.name, "Post Form 만들기")
         self.assertEqual(last_post.author.username, 'james')
 
+    def test_update_post(self):
+        update_post_url = f'/mall/update_post/{self.product_003.pk}/'
+
+        # 로그인하지 않은 경우
+        response = self.client.get(update_post_url)
+        self.assertNotEqual(response.status_code, 200)
+
+        # 로그인은 했지만 작성자가 아닌 경우
+        self.assertNotEqual(self.product_003.author, self.user_trump)
+        self.client.login(
+            username=self.user_trump.username,
+            password='somepassword'
+        )
+
+        response = self.client.get(update_post_url)
+        self.assertEqual(response.status_code, 403)
+
+        # 작성자가 접근하는 경우
+        self.client.login(
+            username=self.product_003.author.username,
+            password='somepassword'
+        )
+        response = self.client.get(update_post_url)
+        self.assertEqual(response.status_code, 200)
+        soup = BeautifulSoup(response.content, 'html.parser')
+
+        self.assertEqual('Edit Product - Mall', soup.title.text)
+        main_area = soup.find('div', id="main-area")
+        self.assertIn('Edit Product', main_area.text)
+
+        response = self.client.post(
+            update_post_url,
+            {
+                'name': 'Post Form 수정하기',
+                'content': "Post Form 페이지를 수저합시다.",
+                'price': 1234,
+                'released_at': '2021-12-12',
+                'publisher': 'aer',
+                'category': self.category_rpg.pk
+            },
+            follow = True
+        )
+        soup = BeautifulSoup(response.content, 'html.parser')
+        main_area = soup.find('div', id='main_area')
+        self.assertIn('Post Form 수정하기', main_area.text)
+        self.assertIn("Post Form 페이지를 수저합시다.", main_area.text)
+        self.assertIn(self.category_rpg.name, main_area.text)
+
     def test_tag_page(self):
         response = self.client.get(self.tag_single.get_absolute_url())
         self.assertEqual(response.status_code, 200)

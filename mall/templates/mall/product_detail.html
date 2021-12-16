@@ -15,10 +15,18 @@
                             <!-- product title-->
                             <h1 class="fw-bolder mb-1">{{ product.name }} <span class="text-muted h3"> &#8361; {{ product.price}} </span></h1>
                             <!-- product meta content-->
-                            <div class="text-muted fst-italic mb-2">Released on {{ product.released_at }} &#124; by {{ product.publisher }}</div>
+                            <div class="text-muted fst-italic mb-2">
+                                Released on {{ product.released_at }} &#124; by {{ product.publisher }}
+
+                            </div>
+                            {% if user.is_authenticated and user == product.author %}
+                                <a class="btn btn-info btn-sm float-right" href="/mall/update_post/{{ product.pk }}/" role="button"><i class="fas fa-pen"></i> Edit Post</a>
+                            {% endif %}
+
                             <!-- product categories-->
                             <a class="badge bg-secondary text-decoration-none link-light" href="#!">Web Design</a>
                             <a class="badge bg-secondary text-decoration-none link-light" href="#!">Freebies</a>
+                            <hr/>
                         </header>
                         <!-- Preview image figure-->
                         {% if product.head_image %}
