@@ -3,6 +3,9 @@ from django.db import models
 
 # Create your models here.
 from django.utils.datetime_safe import datetime
+from markdownx.utils import markdown
+from markdownx.models import MarkdownxField
+
 
 class Tag(models.Model):
     name = models.CharField(max_length=50)
@@ -29,7 +32,7 @@ class Category(models.Model):
 
 class Product(models.Model):
     name = models.CharField(max_length=30)
-    content = models.TextField()
+    content = MarkdownxField()
     price = models.IntegerField()
     publisher = models.CharField(max_length=50)
 
@@ -47,3 +50,6 @@ class Product(models.Model):
 
     def get_absolute_url(self):
         return f'/mall/{self.pk}/'
+
+    def get_content_markdown(self):
+        return markdown(self.content)

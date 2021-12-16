@@ -6,6 +6,7 @@ from django.urls import path, include
 urlpatterns = [
     path('mall/', include('mall.urls')),
     path('admin/', admin.site.urls),
+    path('markdownx/', include('markdownx.urls')),
     path('', include('single_pages.urls'))
 ]
 

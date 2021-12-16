@@ -36,7 +36,7 @@
                         {% endif %}
                         <!-- product content-->
                         <section class="mb-5">
-                            <p> {{ product.content }} </p>
+                            <p> {{ product.get_content_markdown | safe }} </p>
                         </section>
 
                         {% if product.tags.exists %}

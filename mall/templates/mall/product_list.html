@@ -30,7 +30,7 @@
               {% endif %}
               <h2 class="card-title h4">{{ p.name }}<span class="text-muted h5">&nbsp; &#8361; {{ p.price }} </span></h2>
               <h6 class="text-muted">Published by {{ p.publisher }}</h6>
-              <p class="card-text">{{ p.content | truncatewords:45 }}</p>
+              <p class="card-text">{{ p.get_content_markdown | truncatewords_html:45 | safe }}</p>
 
               {% if p.tags.exists %}
               <i class="fas fa-tags"></i>
