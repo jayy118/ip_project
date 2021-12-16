@@ -10,6 +10,8 @@ class TestView(TestCase):
         self.client = Client()
         self.user_james = User.objects.create_user(username='james', password='somepassword')
         self.user_trump = User.objects.create_user(username='trump', password='somepassword')
+        self.user_james.is_staff = True
+        self.user_james.save()
 
         self.category_rpg = Category.objects.create(name='rpg', slug='rpg')
         self.category_simulation = Category.objects.create(name='simulation', slug='simulation')
@@ -50,7 +52,12 @@ class TestView(TestCase):
         response = self.client.get('/mall/create_post/')
         self.assertNotEqual(response.status_code, 200)
 
-        # 로그인
+        # staff 아닌 trump 로그인
+        self.client.login(username='trump', password='somepassword')
+        response = self.client.get('/mall/create_post/')
+        self.assertNotEqual(response.status_code, 200)
+
+        # staff인 james 로그인
         self.client.login(username='james', password='somepassword')
 
         response = self.client.get('/mall/create_post/')
