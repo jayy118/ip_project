@@ -68,6 +68,9 @@ class TestView(TestCase):
         main_area = soup.find('div', id='main-area')
         self.assertIn('Add New Product', main_area.text)
 
+        tag_str_input = main_area.find('input', id='id_tags_str')
+        self.assertTrue(tag_str_input)
+
         self.client.post(
             '/mall/create_post/',
             {
@@ -76,11 +79,18 @@ class TestView(TestCase):
                 'price': 1234,
                 'released_at': '2021-12-12',
                 'publisher': 'aer',
+                'tags_str': 'new tag; 한글 태그, 협동'
             }
         )
         last_post = Product.objects.last()
         self.assertEqual(last_post.name, "Post Form 만들기")
         self.assertEqual(last_post.author.username, 'james')
+
+        self.assertEqual(last_post.tags.count(), 3)
+        self.assertTrue(Tag.objects.get(name='new tag'))
+        self.assertTrue(Tag.objects.get(name='한글 태그'))
+        self.assertEqual(Tag.objects.count(), 5)
+
 
     def test_update_post(self):
         update_post_url = f'/mall/update_post/{self.product_003.pk}/'
@@ -112,6 +122,10 @@ class TestView(TestCase):
         main_area = soup.find('div', id="main-area")
         self.assertIn('Edit Product', main_area.text)
 
+        tag_str_input = main_area.find('input', id='id_tags_str')
+        self.assertTrue(tag_str_input)
+        self.assertIn('협동; 멀티 플레이어', tag_str_input.attrs['value'])
+
         response = self.client.post(
             update_post_url,
             {
@@ -120,15 +134,21 @@ class TestView(TestCase):
                 'price': 1234,
                 'released_at': '2021-12-12',
                 'publisher': 'aer',
-                'category': self.category_rpg.pk
+                'category': self.category_rpg.pk,
+                'tags_str': '멀티 플레이어; 한글 태그, some tag'
             },
             follow = True
         )
         soup = BeautifulSoup(response.content, 'html.parser')
-        main_area = soup.find('div', id='main_area')
+        main_area = soup.find('div', id="main-area")
         self.assertIn('Post Form 수정하기', main_area.text)
         self.assertIn("Post Form 페이지를 수저합시다.", main_area.text)
         self.assertIn(self.category_rpg.name, main_area.text)
+        self.assertTrue(Tag.objects.get(name='멀티 플레이어'))
+        self.assertTrue(Tag.objects.get(name='한글 태그'))
+        self.assertTrue(Tag.objects.get(name='some tag'))
+        self.assertTrue(Tag.objects.get(name='협동'))
+
 
     def test_tag_page(self):
         response = self.client.get(self.tag_single.get_absolute_url())
