@@ -1,5 +1,6 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core.exceptions import PermissionDenied
+from django.db.models import Q
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils.text import slugify
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
@@ -11,6 +12,7 @@ from .models import Product, Category, Tag
 class ProductList(ListView):
     model = Product
     ordering = '-pk'
+    paginate_by = 5
 
     def get_context_data(self, **kwargs):
         context = super(ProductList, self).get_context_data()
@@ -19,6 +21,22 @@ class ProductList(ListView):
 
         return context
 
+class ProductSearch(ProductList):
+    paginate_by = None
+
+    def get_queryset(self):
+        q = self.kwargs['q']
+        product_list = Product.objects.filter(
+            Q(name__contains=q) | Q(tags__name__contains=q)
+        ).distinct()
+        return product_list
+
+    def get_context_data(self, **kwargs):
+        context = super(ProductSearch, self).get_context_data()
+        q = self.kwargs['q']
+        context['search_info'] = f'Search : {q}({self.get_queryset().count()})'
+
+        return context
 
 def new_comment(request, pk):
     if request.user.is_authenticated:

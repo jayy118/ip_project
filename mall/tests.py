@@ -345,3 +345,22 @@ class TestView(TestCase):
         new_comment_div = comment_area.find('div', id=f'comment-{new_comment.pk}')
         self.assertIn('trump', new_comment_div.text)
         self.assertIn("두번째 댓글입니다.", new_comment_div.text)
+
+    def test_search(self):
+        product_004 = Product.objects.create(
+            name="게임에 대한 포스트입니다.",
+            content='Hello World.',
+            price=1234,
+            author=self.user_james
+        )
+
+        response = self.client.get('/mall/search/게임/')
+        self.assertEqual(response.status_code, 200)
+
+        soup = BeautifulSoup(response.content, 'html.parser')
+        main_area = soup.find('div', id='main-area')
+        self.assertIn('Search : 게임(1)', main_area.text)
+        self.assertNotIn(self.product_001.name, main_area.text)
+        self.assertNotIn(self.product_002.name, main_area.text)
+        self.assertNotIn(self.product_003.name, main_area.text)
+        self.assertIn(product_004.name, main_area.text)
