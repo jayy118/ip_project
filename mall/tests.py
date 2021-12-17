@@ -1,7 +1,7 @@
 from bs4 import BeautifulSoup
 from django.contrib.auth.models import User
 from django.test import TestCase, Client
-from .models import Product, Category, Tag
+from .models import Product, Category, Tag, Comment
 
 
 # Create your tests here.
@@ -46,6 +46,12 @@ class TestView(TestCase):
         )
         self.product_003.tags.add(self.tag_coop)
         self.product_003.tags.add(self.tag_multi)
+
+        self.comment_001 = Comment.objects.create(
+            product = self.product_001,
+            author = self.user_trump,
+            content='첫 번째 댓글입니다. '
+        )
 
     def test_create_post(self):
         # 로그인하지 않으면 status code != 200
@@ -125,7 +131,6 @@ class TestView(TestCase):
         tag_str_input = main_area.find('input', id='id_tags_str')
         self.assertTrue(tag_str_input)
         self.assertIn('협동; 멀티 플레이어', tag_str_input.attrs['value'])
-
         response = self.client.post(
             update_post_url,
             {
@@ -148,6 +153,7 @@ class TestView(TestCase):
         self.assertTrue(Tag.objects.get(name='한글 태그'))
         self.assertTrue(Tag.objects.get(name='some tag'))
         self.assertTrue(Tag.objects.get(name='협동'))
+
 
 
     def test_tag_page(self):
@@ -274,6 +280,12 @@ class TestView(TestCase):
         self.assertNotIn(self.tag_multi.name, post_area.text)
         self.assertNotIn(self.tag_coop.name, post_area.text)
 
+        # comment area
+        comments_area = soup.find('div', id='comment-area')
+        comment_001_area = comments_area.find('div', id='comment-1')
+        self.assertIn(self.comment_001.author.username, comment_001_area.text)
+        self.assertIn(self.comment_001.content, comment_001_area.text)
+
     def test_category_page(self):
         response = self.client.get(self.category_simulation.get_absolute_url())
         self.assertEqual(response.status_code, 200)
@@ -289,3 +301,47 @@ class TestView(TestCase):
         self.assertIn(self.product_001.name, main_area.text)
         self.assertNotIn(self.product_002.name, main_area.text)
         self.assertNotIn(self.product_003.name, main_area.text)
+
+    def test_comment_form(self):
+        self.assertEqual(Comment.objects.count(), 1)
+        self.assertEqual(self.product_001.comment_set.count(), 1)
+
+        # 로그인 하지 않은 상태
+        response = self.client.get(self.product_001.get_absolute_url())
+        self.assertEqual(response.status_code, 200)
+        soup = BeautifulSoup(response.content, 'html.parser')
+
+        comment_area = soup.find('div', id='comment-area')
+        self.assertIn('Log in and leave a comment', comment_area.text)
+        self.assertFalse(comment_area.find('form', id='comment-form'))
+
+        # 로그인 한 상태
+        self.client.login(username='trump', password='somepassword')
+        response = self.client.get(self.product_001.get_absolute_url())
+        self.assertEqual(response.status_code, 200)
+        soup = BeautifulSoup(response.content, 'html.parser')
+
+        comment_area = soup.find('div', id='comment-area')
+        self.assertNotIn('Log in and leave a comment', comment_area.text)
+
+        comment_form = comment_area.find('form', id='comment-form')
+        self.assertTrue(comment_form.find('textarea', id='id_content'))
+        response = self.client.post(
+            self.product_001.get_absolute_url() + 'new_comment/',
+            {
+                'content': "두번째 댓글입니다.",
+            },
+            follow=True
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(Comment.objects.count(), 2)
+        self.assertEqual(self.product_001.comment_set.count(), 2)
+
+        new_comment = Comment.objects.last()
+        soup = BeautifulSoup(response.content, 'html.parser')
+        self.assertIn(new_comment.product.name, soup.title.text)
+        comment_area = soup.find('div', id='comment-area')
+        new_comment_div = comment_area.find('div', id=f'comment-{new_comment.pk}')
+        self.assertIn('trump', new_comment_div.text)
+        self.assertIn("두번째 댓글입니다.", new_comment_div.text)

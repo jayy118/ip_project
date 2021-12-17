@@ -7,5 +7,6 @@ urlpatterns = [
     path('tag/<str:slug>/', views.tag_page),
     path('<int:pk>/', views.ProductDetail.as_view()),
     path('', views.ProductList.as_view()),
+    path('<int:pk>/new_comment/', views.new_comment),
     path('category/<str:slug>/', views.category_page)
 ]
