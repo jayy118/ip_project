@@ -43,6 +43,20 @@
               </div>
           </div>
       </div>
+      <div class="card mb-4" id="publishers-card">
+          <div class="card-header">Publishers</div>
+          <div class="card-body">
+              <div class="row">
+                      <ul>
+                          {% for publisher in publishers %}
+                          <li><a href="{{ publisher.get_absolute_url }}"> {{ publisher }} ({{ publisher.product_set.count }})</a></li>
+                          {% endfor %}
+                          <li><a href="/mall/publisher/no_publisher/">미분류 ({{ no_publisher_product_count }})</a></li>
+                      </ul>
+              </div>
+          </div>
+      </div>
+
       </div>
     </div>
   </div>

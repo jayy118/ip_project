@@ -6,7 +6,7 @@
     <title>About Us</title>
     <link href="{% static 'mall/bootstrap/bootstrap.min.css' %}" rel="stylesheet" type="text/css" media="screen">
     <script src="https://kit.fontawesome.com/6b90979e00.js" crossorigin="anonymous"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
 </head>
 <body>
 
@@ -15,11 +15,17 @@
 <section>
     <div class="container mt-4">
         <div class="row">
-            <div class="col-lg-8">
-                <h1>안녕하세요. DS Games입니다.</h1>
+            <div class="col-lg-7">
+                <h1>안녕하세요. Game Over입니다.</h1>
+                <p><br>원하는 게임들을 취향대로 만나 보세요. <br>
+                    다양한 장르의 게임들이 준비되어 있습니다. <hr>
+                </p>
+                <h4 class="font-weight-bold">Company Info</h4>
+                <h6 class="font-weight-bold"><br>주소: 서울특별시 도봉구 삼양로 144길 33</h6>
+                <h6 class="font-weight-bold">고객센터: 02-123-4567</h6>
             </div>
-            <div class="col-lg-4">
-                <img class="img-fluid" src="{% static 'single_pages/images/my_back.png' %}">
+            <div class="col-lg-5">
+                <img class="img-fluid" src="{% static 'single_pages/images/gameover.jpg' %}">
             </div>
         </div>
     </div>
@@ -33,30 +39,21 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-4">
+            <div class="col-6">
                 <div class="card" data-toggle="modal" data-target="#portfolio1">
-                    <img class="card-img-top" src="{% static 'single_pages/images/pycon_sy_2017.png' %}">
+                    <img class="card-img-top" src="{% static 'single_pages/images/categories.jpg' %}">
                     <div class="card-body">
-                        <h5 class="card-title">파이썬으로 통계업무 자동화하기</h5>
-                        <p>Python, Django로 통계업무 자동화하기 발표</p>
+                        <h5 class="card-title">카테고리별 상품 갯수</h5>
+                        <p>각 카테고리 별 등록된 상품의 수의 정보</p>
                     </div>
                 </div>
             </div>
-            <div class="col-4">
+            <div class="col-6">
                 <div class="card" data-toggle="modal" data-target="#portfolio2">
-                    <img class="card-img-top" src="{% static 'single_pages/images/automation_python.png' %}">
+                    <img class="card-img-top" src="{% static 'single_pages/images/publishers.png' %}">
                     <div class="card-body">
-                        <h5 class="card-title">파이썬으로 통계업무 자동화하기</h5>
-                        <p>Python, Django로 통계업무 자동화하기 발표</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-4">
-                <div class="card" data-toggle="modal" data-target="#portfolio3">
-                    <img class="card-img-top" src="{% static 'single_pages/images/inflearn_django2.png' %}">
-                    <div class="card-body">
-                        <h5 class="card-title">파이썬으로 통계업무 자동화하기</h5>
-                        <p>Python, Django로 통계업무 자동화하기 발표</p>
+                        <h5 class="card-title">배급사별 상품의 수</h5>
+                        <p>각 배급사 별 등록된 상품의 수의 정보</p>
                     </div>
                 </div>
             </div>
@@ -69,24 +66,53 @@
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel1">파이썬으로 통계업무 자동화하기</h5>
+        <h5 class="modal-title" id="exampleModalLabel1">카테고리별 상품 갯수</h5>
         <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
           <div class="row">
-              <div class="col-lg-7">
-                  <img class="card-img-top" src="{% static 'single_pages/images/pycon_sy_2017.png' %}">
-              </div>
-              <div class="col-lg-5">
-                  <p>Python, Django로 통계업무 자동화하기 발표</p>
-              </div>
+              <canvas id="myChart" style="max-width: 700px;"></canvas>
+              <script>
+                const ctx = document.getElementById('myChart').getContext('2d');
+                const myChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['시뮬레이션', '액션', 'RPG', '전략'],
+                        datasets: [{
+                            label: '#num of',
+                            data: [9, 8, 2, 1],
+                            backgroundColor: [
+                                'rgba(255, 99, 132, 0.2)',
+                                'rgba(54, 162, 235, 0.2)',
+                                'rgba(255, 206, 86, 0.2)',
+                                'rgba(75, 192, 192, 0.2)',
+                            ],
+                            borderColor: [
+                                'rgba(255, 99, 132, 1)',
+                                'rgba(54, 162, 235, 1)',
+                                'rgba(255, 206, 86, 1)',
+                                'rgba(75, 192, 192, 1)',
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            yAxes: [{
+                                ticks: {
+                                    beginAtZero: true,
+                                }
+                            }]
+                        }
+                    }
+                });
+              </script>
           </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
       </div>
     </div>
   </div>
@@ -97,58 +123,61 @@
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel2">파이썬으로 통계업무 자동화하기</h5>
+        <h5 class="modal-title" id="exampleModalLabel2">배급사별 상품의 수</h5>
         <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
           <div class="row">
-              <div class="col-lg-7">
-                  <img class="card-img-top" src="{% static 'single_pages/images/automation_python.png' %}">
-              </div>
-              <div class="col-lg-5">
-                  <p>Python, Django로 통계업무 자동화하기 발표</p>
-              </div>
+              <canvas id="myChart2" style="max-width: 700px;"></canvas>
+              <script>
+                const ctx1 = document.getElementById('myChart2').getContext('2d');
+                const myChart2 = new Chart(ctx1, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Team 17', 'Electronic Arts', 'Keli Entertainment', 'CD PROJEKT RED', '그 외'],
+                        datasets: [{
+                            label: '#num of',
+                            data: [3, 4, 3, 2, 8],
+                            backgroundColor: [
+                                'rgba(255, 99, 132, 0.2)',
+                                'rgba(54, 162, 235, 0.2)',
+                                'rgba(255, 206, 86, 0.2)',
+                                'rgba(75, 192, 192, 0.2)',
+                                'rgba(153, 102, 255, 0.2)',
+                            ],
+                            borderColor: [
+                                'rgba(255, 99, 132, 1)',
+                                'rgba(54, 162, 235, 1)',
+                                'rgba(255, 206, 86, 1)',
+                                'rgba(75, 192, 192, 1)',
+                                'rgba(153, 102, 255, 1)',
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            yAxes: [{
+                                ticks: {
+                                    beginAtZero: true,
+                                }
+                            }]
+                        }
+                    }
+                });
+              </script>
           </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Modal -->
-<div class="modal fade" id="portfolio3" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel3" aria-hidden="true">
-  <div class="modal-dialog modal-lg" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel3">파이썬으로 통계업무 자동화하기</h5>
-        <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-          <div class="row">
-              <div class="col-lg-7">
-                  <img class="card-img-top" src="{% static 'single_pages/images/inflearn_django2.png' %}">
-              </div>
-              <div class="col-lg-5">
-                  <p>Python, Django로 통계업무 자동화하기 발표</p>
-              </div>
-          </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="fixed-bottom">
+<div class="mt-3">
     {% include 'mall/footer.html' %}
 </div>
 

@@ -6,7 +6,7 @@ from django.utils.text import slugify
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
 
 from .forms import CommentForm
-from .models import Product, Category, Tag
+from .models import Product, Category, Tag, Publisher
 
 
 class ProductList(ListView):
@@ -18,6 +18,8 @@ class ProductList(ListView):
         context = super(ProductList, self).get_context_data()
         context['categories'] = Category.objects.all()
         context['no_category_product_count'] = Product.objects.filter(category=None).count()
+        context['publishers'] = Publisher.objects.all()
+        context['no_publisher_product_count'] = Product.objects.filter(publisher=None).count()
 
         return context
 
@@ -168,6 +170,26 @@ def category_page(request, slug):
     )
 
 
+def publisher_page(request, slug):
+    if slug == 'no_publisher':
+        publisher = '미분류'
+        product_list = Product.objects.filter(publisher=None)
+    else:
+        publisher = Publisher.objects.get(slug=slug)
+        product_list = Product.objects.filter(publisher=publisher)
+
+    return render(
+        request,
+        'mall/product_list.html',
+        {
+            'product_list': product_list,
+            'publishers': Publisher.objects.all(),
+            'no_publisher_product_count': Product.objects.filter(publisher=None).count(),
+            'publisher': publisher,
+        }
+    )
+
+
 class ProductDetail(DetailView):
     model = Product
 
@@ -175,6 +197,8 @@ class ProductDetail(DetailView):
         context = super(ProductDetail, self).get_context_data()
         context['categories'] = Category.objects.all()
         context['no_category_product_count'] = Product.objects.filter(category=None).count()
+        context['publishers'] = Publisher.objects.all()
+        context['no_publisher_product_count'] = Product.objects.filter(publisher=None).count()
         context['comment_form'] = CommentForm
 
         return context

@@ -17,6 +17,7 @@ class Tag(models.Model):
     def get_absolute_url(self):
         return f'/mall/tag/{self.slug}/'
 
+
 class Category(models.Model):
     name = models.CharField(max_length=50, unique=True)
     slug = models.SlugField(max_length=200, unique=True, blank=True, allow_unicode=True)
@@ -31,14 +32,21 @@ class Category(models.Model):
         return f'/mall/category/{self.slug}/'
 
 
+class Publisher(models.Model):
+    name = models.CharField(max_length=50, unique=True)
+    slug = models.SlugField(max_length=200, unique=True, blank=True, allow_unicode=True)
 
+    def __str__(self):
+        return self.name
+
+    def get_absolute_url(self):
+        return f'/mall/publisher/{self.slug}/'
 
 
 class Product(models.Model):
     name = models.CharField(max_length=30)
     content = MarkdownxField()
     price = models.IntegerField()
-    publisher = models.CharField(max_length=50)
 
     released_at = models.DateField(null=True)
     head_image = models.ImageField(upload_to='mall/images/%Y/%m/%d/',
@@ -46,9 +54,8 @@ class Product(models.Model):
 
     author = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
 
+    publisher = models.ForeignKey(Publisher, null=True, blank=True, on_delete=models.SET_NULL)
     category = models.ForeignKey(Category, null=True, blank=True, on_delete=models.SET_NULL)
-    category = models.ForeignKey(Category, null=True, blank=True, on_delete=models.SET_NULL)
-
 
     tags = models.ManyToManyField(Tag, blank=True)
 
